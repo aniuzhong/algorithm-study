@@ -4,7 +4,7 @@
 #include <random>
 #include <functional>
 
-#include "algorithm_lite.hpp"
+#include "algorithm_lite.h"
 
 auto print = [](auto const rem, auto const& v) {
   std::cout << rem;
