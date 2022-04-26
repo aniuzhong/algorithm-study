@@ -3,6 +3,7 @@
 #include <vector>
 #include <random>
 #include <functional>
+#include <algorithm>
 
 #include "algorithm_lite.h"
 
