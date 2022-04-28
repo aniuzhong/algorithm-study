@@ -277,6 +277,6 @@ void QuickSort(ForwardIt first, ForwardIt last) {
       first, last, [pivot](const auto& em) { return em < pivot; });
   ForwardIt middle2 = std::partition(
       middle1, last, [pivot](const auto& em) { return !(pivot < em); });
-  quicksort(first, middle1);
-  quicksort(middle2, last);
+  QuickSort(first, middle1);
+  QuickSort(middle2, last);
 }
