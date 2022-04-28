@@ -1,9 +1,9 @@
+#include <algorithm>
+#include <functional>
 #include <iostream>
 #include <iterator>
-#include <vector>
 #include <random>
-#include <functional>
-#include <algorithm>
+#include <vector>
 
 #include "algorithm_lite.h"
 

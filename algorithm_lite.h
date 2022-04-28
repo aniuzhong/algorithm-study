@@ -3,17 +3,37 @@
 #include <utility>      // std::pair, std::make_pair
                         // std::iterator_traits, std::random_access_iterator_tag
 
-// ForEach
-// Copy
-// Merge
+// Non-modifying sequence operations
+//   Find
+//   FindIf
+//   FindIfNot
+//   ForEach
+//   ForEachN
+//   Count
+//   CountIf
+
+// Modifying sequence operations
+//   Copy
+//   CopyIf
+//   Generate
+//   Reverse
+//   Rotate
 
 // Partitioning operations
-// IsPartitioned
+//   IsPartitioned
 //   Partition
 //   PartitionCopy
 //   std::stable_partition
 //   std::partition_point
+//   QuickSort
 
+// Sorting operations
+//   IsSort
+//   IsSortedUntil
+//   std::sort
+//   std::stable_sort
+//   std::partial_sort
+//   std::nth_element
 
 // Binary search operations (on sorted ranges)
 //   LowerBound
@@ -21,18 +41,94 @@
 //   BinarySearch
 //   EqualRange
 
-// FindIfNot
-// QuickSort
-// Generate
-// Reverse
-// Unique
-// IsSortedUntil
+// Other operations on sorted ranges
+//   Merge
+//   std::inplace_merge
+//   MergeSort
+
+template <typename InputIt, typename T>
+constexpr InputIt Find(InputIt first, InputIt last, const T& value) {
+  for (; first != last; ++first) {
+    if (*first == value) {
+      return first;
+    }
+  }
+  return last;
+}
+
+template <typename InputIt, typename UnaryPredicate>
+constexpr InputIt FindIf(InputIt first, InputIt last, UnaryPredicate p) {
+  for (; first != last; ++first) {
+    if (p(*first)) {
+      return first;
+    }
+  }
+  return last;
+}
+
+template <typename InputIt, typename UnaryPredicate>
+constexpr InputIt FindIfNot(InputIt first, InputIt last, UnaryPredicate q) {
+  for (; first != last; ++first) {
+    if (!q(*first)) {
+      return first;
+    }
+  }
+  return last;
+}
+
+template <typename InputIt, typename UnaryPredicate>
+constexpr bool AllOf(InputIt first, InputIt last, UnaryPredicate p) {
+  return FindIfNot(first, last, p) == last;
+}
+
+template <typename InputIt, typename UnaryPredicate>
+constexpr bool AnyOf(InputIt first, InputIt last, UnaryPredicate p) {
+  return FindIf(first, last, p) != last;
+}
+
+template <typename InputIt, typename UnaryPredicate>
+constexpr bool NoneOf(InputIt first, InputIt last, UnaryPredicate p) {
+  return FindIf(first, last, p) == last;
+}
 
 template <typename InputIt, typename UnaryFunction>
 constexpr UnaryFunction ForEach(InputIt first, InputIt last, UnaryFunction f) {
   for (; first != last; ++first) {
     f(*first);
   }
+  return f;
+}
+
+template <typename InputIt, typename Size, typename UnaryFunction>
+InputIt ForEachN(InputIt first, Size n, UnaryFunction f) {
+  for (Size i = 0; i < n; ++first, (void)++i) {
+    f(*first);
+  }
+  return first;
+}
+
+template <typename InputIt, typename T>
+typename std::iterator_traits<InputIt>::difference_type  //
+Count(InputIt first, InputIt last, const T& value) {
+  typename std::iterator_traits<InputIt>::difference_type ret = 0;
+  for (; first != last; ++first) {
+    if (*first == value) {
+      ret++;
+    }
+  }
+  return ret;
+}
+
+template <typename InputIt, typename UnaryPredicate>
+typename std::iterator_traits<InputIt>::difference_type  //
+CountIf(InputIt first, InputIt last, UnaryPredicate p) {
+  typename std::iterator_traits<InputIt>::difference_type ret = 0;
+  for (; first != last; ++first) {
+    if (p(*first)) {
+      ret++;
+    }
+  }
+  return ret;
 }
 
 template <typename InputIt, typename OutputIt>
@@ -41,6 +137,53 @@ OutputIt Copy(InputIt first, InputIt last, OutputIt d_first) {
     *d_first = *first;
   }
   return d_first;
+}
+
+template <class InputIt, class OutputIt, class UnaryPredicate>
+OutputIt CopyIf(InputIt first, InputIt last, OutputIt d_first,
+                UnaryPredicate pred) {
+  for (; first != last; ++first) {
+    if (pred(*first)) {
+      *d_first = *first;
+      ++d_first;
+    }
+  }
+  return d_first;
+}
+
+template <typename BidirIt>
+void Reverse(BidirIt first, BidirIt last) {
+  using iter_cat = typename std::iterator_traits<BidirIt>::iterator_category;
+
+  if constexpr (std::is_base_of_v<std::random_access_iterator_tag, iter_cat>) {
+    if (first == last) return;
+    for (--last; first < last; (void)++first, --last) {
+      std::iter_swap(first, last);
+    }
+  } else {
+    while ((first != last) && (first != --last)) {
+      std::iter_swap(first++, last);
+    }
+  }
+}
+
+template <class ForwardIt>
+ForwardIt rotate(ForwardIt first, ForwardIt n_first, ForwardIt last) {
+  if (first == n_first) return last;
+  if (n_first == last) return first;
+
+  ForwardIt read = n_first;
+  ForwardIt write = first;
+  ForwardIt next_read = first;  // read position for when "read" hits "last"
+
+  while (read != last) {
+    if (write == next_read) next_read = read;  // track where "first" went
+    std::iter_swap(write++, read++);
+  }
+
+  // rotate the remaining sequence into place
+  (rotate)(write, next_read, last);
+  return write;
 }
 
 template <typename InputIt1, typename InputIt2, typename OutputIt>
@@ -108,18 +251,8 @@ bool BinarySearch(ForwardIt first, ForwardIt last, const T& value) {
 template <typename ForwardIt, typename T>
 std::pair<ForwardIt, ForwardIt> EqualRange(ForwardIt first, ForwardIt last,
                                            const T& value) {
-  return std::make_pair(std::lower_bound(first, last, value),
-                        std::upper_bound(first, last, value));
-}
-
-template <typename InputIt, typename UnaryPredicate>
-constexpr InputIt FindIfNot(InputIt first, InputIt last, UnaryPredicate q) {
-  for (; first != last; ++first) {
-    if (!q(*first)) {
-      return first;
-    }
-  }
-  return last;
+  return std::make_pair(LowerBound(first, last, value),
+                        UpperBound(first, last, value));
 }
 
 template <typename ForwardIt, typename UnaryPredicate>
@@ -146,54 +279,4 @@ void QuickSort(ForwardIt first, ForwardIt last) {
       middle1, last, [pivot](const auto& em) { return !(pivot < em); });
   quicksort(first, middle1);
   quicksort(middle2, last);
-}
-
-template <typename ForwardIt, typename Generator>
-void Generate(ForwardIt first, ForwardIt last, Generator g) {
-  while (first != last) {
-    *first++ = g();
-  }
-}
-
-template <typename BidirIt>
-void Reverse(BidirIt first, BidirIt last) {
-  using iter_cat = typename std::iterator_traits<BidirIt>::iterator_category;
-
-  // Tag dispatch, e.g. calling reverse_impl(first, last, iter_cat()),
-  // can be used in C++14 and earlier modes.
-  if constexpr (std::is_base_of_v<std::random_access_iterator_tag, iter_cat>) {
-    if (first == last) return;
-    for (--last; first < last; (void)++first, --last) {
-      std::iter_swap(first, last);
-    }
-  } else {
-    while ((first != last) && (first != --last)) {
-      std::iter_swap(first++, last);
-    }
-  }
-}
-
-template <typename ForwardIt>
-ForwardIt Unique(ForwardIt first, ForwardIt last) {
-  if (first == last) return last;
-
-  ForwardIt result = first;
-  while (++first != last) {
-    if (!(*result == *first) && ++result != first) {
-      *result = std::move(*first);
-    }
-  }
-  return ++result;
-}
-
-template <typename ForwardIt, typename Compare>
-ForwardIt IsSortedUntil(ForwardIt first, ForwardIt last, Compare comp) {
-  if (first != last) {
-    ForwardIt next = first;
-    while (++next != last) {
-      if (comp(*next, *first)) return next;
-      first = next;
-    }
-  }
-  return last;
 }
