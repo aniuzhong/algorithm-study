@@ -1,4 +1,5 @@
 #include <memory>
+#include <new>
 #include <type_traits>
 
 template <typename T>
@@ -21,8 +22,8 @@ NoThrowForwardIt UninitializedCopy(InputIt first, InputIt last,
   NoThrowForwardIt current = d_first;
   try {
     for (; first != last; ++first, (void)++current) {
-      ::new (const_cast<void*>(static_cast<const volatile void*>(
-          std::addressof(*current)))) T(*first);
+      ::new (const_cast<void*>(
+          static_cast<const volatile void*>(AddressOf(*current)))) T(*first);
     }
     return current;
   } catch (...) {
@@ -40,8 +41,8 @@ NoThrowForwardIt UninitializedCopyN(InputIt first, Size count,
   NoThrowForwardIt current = d_first;
   try {
     for (; count > 0; ++first, (void)++current, --count) {
-      ::new (const_cast<void*>(static_cast<const volatile void*>(
-          std::addressof(*current)))) T(*first);
+      ::new (const_cast<void*>(
+          static_cast<const volatile void*>(AddressOf(*current)))) T(*first);
     }
   } catch (...) {
     for (; d_first != current; ++d_first) {
@@ -58,8 +59,8 @@ void UninitializedFill(ForwardIt first, ForwardIt last, const T& value) {
   ForwardIt current = first;
   try {
     for (; current != last; ++current) {
-      ::new (const_cast<void*>(static_cast<const volatile void*>(
-          std::addressof(*current)))) V(value);
+      ::new (const_cast<void*>(
+          static_cast<const volatile void*>(AddressOf(*current)))) V(value);
     }
   } catch (...) {
     for (; first != current; ++first) {
@@ -75,8 +76,8 @@ ForwardIt UninitializedFillN(ForwardIt first, Size count, const T& value) {
   ForwardIt current = first;
   try {
     for (; count > 0; ++current, (void)--count) {
-      ::new (const_cast<void*>(static_cast<const volatile void*>(
-          std::addressof(*current)))) V(value);
+      ::new (const_cast<void*>(
+          static_cast<const volatile void*>(AddressOf(*current)))) V(value);
     }
     return current;
   } catch (...) {
@@ -95,7 +96,7 @@ NoThrowForwardIt UninitializedMove(InputIt first, InputIt last,
   try {
     for (; first != last; ++first, (void)++current) {
       ::new (const_cast<void*>(static_cast<const volatile void*>(
-          std::addressof(*current)))) Value(std::move(*first));
+          AddressOf(*current)))) Value(std::move(*first));
     }
     return current;
   } catch (...) {
@@ -112,7 +113,7 @@ std::pair<InputIt, NoThrowForwardIt> UninitializedMoveN(
   try {
     for (; count > 0; ++first, (void)++current, --count) {
       ::new (const_cast<void*>(static_cast<const volatile void*>(
-          std::addressof(*current)))) Value(std::move(*first));
+          AddressOf(*current)))) Value(std::move(*first));
     }
   } catch (...) {
     std::destroy(d_first, current);
@@ -128,7 +129,7 @@ void UninitializedDefaultConstruct(ForwardIt first, ForwardIt last) {
   try {
     for (; current != last; ++current) {
       ::new (const_cast<void*>(
-          static_cast<const volatile void*>(std::addressof(*current)))) Value;
+          static_cast<const volatile void*>(AddressOf(*current)))) Value;
     }
   } catch (...) {
     std::destroy(first, current);

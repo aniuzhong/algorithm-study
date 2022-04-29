@@ -18,6 +18,7 @@
 //   Generate
 //   Reverse
 //   Rotate
+//   InsertionSort
 
 // Partitioning operations
 //   IsPartitioned
@@ -37,6 +38,8 @@
 
 // Binary search operations (on sorted ranges)
 //   LowerBound
+template <typename ForwardIt, typename T>
+ForwardIt UpperBound(ForwardIt first, ForwardIt last, const T& value);
 //   UpperBound
 //   BinarySearch
 //   EqualRange
@@ -139,7 +142,7 @@ OutputIt Copy(InputIt first, InputIt last, OutputIt d_first) {
   return d_first;
 }
 
-template <class InputIt, class OutputIt, class UnaryPredicate>
+template <typename InputIt, typename OutputIt, typename UnaryPredicate>
 OutputIt CopyIf(InputIt first, InputIt last, OutputIt d_first,
                 UnaryPredicate pred) {
   for (; first != last; ++first) {
@@ -157,7 +160,7 @@ void Reverse(BidirIt first, BidirIt last) {
 
   if constexpr (std::is_base_of_v<std::random_access_iterator_tag, iter_cat>) {
     if (first == last) return;
-    for (--last; first < last; (void)++first, --last) {
+    for (--last; first < last; (void)++first, --last) {  // support operator<()
       std::iter_swap(first, last);
     }
   } else {
@@ -167,8 +170,8 @@ void Reverse(BidirIt first, BidirIt last) {
   }
 }
 
-template <class ForwardIt>
-ForwardIt rotate(ForwardIt first, ForwardIt n_first, ForwardIt last) {
+template <typename ForwardIt>
+ForwardIt Rotate(ForwardIt first, ForwardIt n_first, ForwardIt last) {
   if (first == n_first) return last;
   if (n_first == last) return first;
 
@@ -182,8 +185,15 @@ ForwardIt rotate(ForwardIt first, ForwardIt n_first, ForwardIt last) {
   }
 
   // rotate the remaining sequence into place
-  (rotate)(write, next_read, last);
+  (Rotate)(write, next_read, last);
   return write;
+}
+
+template <typename ForwardIt>
+void InsertionSort(ForwardIt first, ForwardIt last) {
+  for (auto it = first; it != last; ++it) {
+    Rotate(UpperBound(first, it, *it), it, it + 1);
+  }
 }
 
 template <typename InputIt1, typename InputIt2, typename OutputIt>
