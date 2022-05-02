@@ -1,0 +1,2 @@
+add_executable(test_unique test_unique.cc)
+add_executable(test_quick_sort test_quick_sort.cc)
