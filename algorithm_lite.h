@@ -55,42 +55,18 @@ template <typename OutputIt, typename Size, typename T>
 OutputIt FillN(OutputIt first, Size count, const T& value);
 //   Remove
 template <typename ForwardIt, typename T>
-ForwardIt Remove(ForwardIt first, ForwardIt last, const T& value) {
-  first = std::find(first, last, value);
-  if (first != last)
-    for (ForwardIt i = first; ++i != last;)
-      if (!(*i == value)) *first++ = std::move(*i);
-  return first;
-}
+ForwardIt Remove(ForwardIt first, ForwardIt last, const T& value);
 //   RemoveIf
 template <typename ForwardIt, typename UnaryPredicate>
-ForwardIt RemoveIf(ForwardIt first, ForwardIt last, UnaryPredicate p) {
-  first = FindIf(first, last, p);
-  if (first != last)
-    for (ForwardIt i = first; ++i != last;)
-      if (!p(*i)) *first++ = std::move(*i);
-  return first;
-}
+ForwardIt RemoveIf(ForwardIt first, ForwardIt last, UnaryPredicate p);
 //   Replace
 template <typename ForwardIt, typename T>
 void Replace(ForwardIt first, ForwardIt last, const T& old_value,
-             const T& new_value) {
-  for (; first != last; ++first) {
-    if (*first == old_value) {
-      *first = new_value;
-    }
-  }
-}
+             const T& new_value);
 //   ReplaceIf
 template <typename ForwardIt, typename UnaryPredicate, typename T>
 void ReplaceIf(ForwardIt first, ForwardIt last, UnaryPredicate p,
-               const T& new_value) {
-  for (; first != last; ++first) {
-    if (p(*first)) {
-      *first = new_value;
-    }
-  }
-}
+               const T& new_value);
 //   IterSwap
 template <typename ForwardIt1, typename ForwardIt2>
 void IterSwap(ForwardIt1 a, ForwardIt2 b);
@@ -113,13 +89,7 @@ ForwardIt Unique(ForwardIt first, ForwardIt last);
 // Partitioning operations
 // IsPartitioned
 template <typename InputIt, typename UnaryPredicate>
-bool IsPartitioned(InputIt first, InputIt last, UnaryPredicate p) {
-  for (; first != last; ++first)
-    if (!p(*first)) break;
-  for (; first != last; ++first)
-    if (p(*first)) return false;
-  return true;
-}
+bool IsPartitioned(InputIt first, InputIt last, UnaryPredicate p);
 //   Partition
 template <typename ForwardIt, typename UnaryPredicate>
 ForwardIt Partition(ForwardIt first, ForwardIt last, UnaryPredicate p);
@@ -132,29 +102,14 @@ void QuickSort(ForwardIt first, ForwardIt last);
 // Sorting operations
 //   IsSortedUntil
 template <typename ForwardIt>
-ForwardIt IsSortedUntil(ForwardIt first, ForwardIt last) {
-  return IsSortedUntil(first, last, std::less<>());
-}
+ForwardIt IsSortedUntil(ForwardIt first, ForwardIt last);
 template <typename ForwardIt, typename Compare>
-ForwardIt IsSortedUntil(ForwardIt first, ForwardIt last, Compare comp) {
-  if (first != last) {
-    ForwardIt next = first;
-    while (++next != last) {
-      if (comp(*next, *first)) return next;
-      first = next;
-    }
-  }
-  return last;
-}
+ForwardIt IsSortedUntil(ForwardIt first, ForwardIt last, Compare comp);
 //   IsSort
 template <class ForwardIt>
-bool IsSort(ForwardIt first, ForwardIt last) {
-  return IsSortedUntil(first, last) == last;
-}
+bool IsSort(ForwardIt first, ForwardIt last);
 template <class ForwardIt, class Compare>
-bool IsSort(ForwardIt first, ForwardIt last, Compare comp) {
-  return IsSortedUntil(first, last, comp) == last;
-}
+bool IsSort(ForwardIt first, ForwardIt last, Compare comp);
 //   std::sort
 //   std::stable_sort
 //   std::partial_sort
@@ -177,15 +132,8 @@ std::pair<ForwardIt, ForwardIt> EqualRange(ForwardIt first, ForwardIt last,
 
 // Set operations (on sorted ranges)
 //   Includes
-template <class InputIt1, class InputIt2>
-bool Includes(InputIt1 first1, InputIt1 last1, InputIt2 first2,
-              InputIt2 last2) {
-  for (; first2 != last2; ++first1) {
-    if (first1 == last1 || *first2 < *first1) return false;
-    if (!(*first1 < *first2)) ++first2;
-  }
-  return true;
-}
+template <typename InputIt1, typename InputIt2>
+bool Includes(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2);
 
 // Other operations on sorted ranges
 //   Merge
@@ -195,14 +143,7 @@ OutputIt Merge(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2,
 //   std::inplace_merge
 //   MergeSort
 template <typename Iter>
-void MergeSort(Iter first, Iter last) {
-  if (last - first > 1) {
-    Iter middle = first + (last - first) / 2;
-    MergeSort(first, middle);
-    MergeSort(middle, last);
-    std::inplace_merge(first, middle, last);
-  }
-}
+void MergeSort(Iter first, Iter last);
 
 // Minimum/maximum operations
 //   MinElement

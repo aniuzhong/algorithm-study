@@ -128,6 +128,43 @@ OutputIt FillN(OutputIt first, Size count, const T& value) {
   return first;
 }
 
+template <typename ForwardIt, typename T>
+ForwardIt Remove(ForwardIt first, ForwardIt last, const T& value) {
+  first = Find(first, last, value);
+  if (first != last)
+    for (ForwardIt i = first; ++i != last;)
+      if (!(*i == value)) *first++ = std::move(*i);
+  return first;
+}
+
+template <typename ForwardIt, typename UnaryPredicate>
+ForwardIt RemoveIf(ForwardIt first, ForwardIt last, UnaryPredicate p) {
+  first = FindIf(first, last, p);
+  if (first != last)
+    for (ForwardIt i = first; ++i != last;)
+      if (!p(*i)) *first++ = std::move(*i);
+  return first;
+}
+
+template <typename ForwardIt, typename T>
+void Replace(ForwardIt first, ForwardIt last, const T& old_value,
+             const T& new_value) {
+  for (; first != last; ++first) {
+    if (*first == old_value) {
+      *first = new_value;
+    }
+  }
+}
+
+template <typename ForwardIt, typename UnaryPredicate, typename T>
+void ReplaceIf(ForwardIt first, ForwardIt last, UnaryPredicate p,
+               const T& new_value) {
+  for (; first != last; ++first) {
+    if (p(*first)) {
+      *first = new_value;
+    }
+  }
+}
 template <typename ForwardIt1, typename ForwardIt2>
 void IterSwap(ForwardIt1 a, ForwardIt2 b) {
   using std::swap;
@@ -194,6 +231,15 @@ ForwardIt Unique(ForwardIt first, ForwardIt last) {
   return ++result;
 }
 
+template <typename InputIt, typename UnaryPredicate>
+bool IsPartitioned(InputIt first, InputIt last, UnaryPredicate p) {
+  for (; first != last; ++first)
+    if (!p(*first)) break;
+  for (; first != last; ++first)
+    if (p(*first)) return false;
+  return true;
+}
+
 template <typename ForwardIt, typename UnaryPredicate>
 ForwardIt Partition(ForwardIt first, ForwardIt last, UnaryPredicate p) {
   first = FindIfNot(first, last, p);
@@ -218,6 +264,33 @@ void QuickSort(ForwardIt first, ForwardIt last) {
       middle1, last, [pivot](const auto& em) { return !(pivot < em); });
   QuickSort(first, middle1);
   QuickSort(middle2, last);
+}
+
+template <typename ForwardIt>
+ForwardIt IsSortedUntil(ForwardIt first, ForwardIt last) {
+  return IsSortedUntil(first, last, std::less<>());
+}
+
+template <typename ForwardIt, typename Compare>
+ForwardIt IsSortedUntil(ForwardIt first, ForwardIt last, Compare comp) {
+  if (first != last) {
+    ForwardIt next = first;
+    while (++next != last) {
+      if (comp(*next, *first)) return next;
+      first = next;
+    }
+  }
+  return last;
+}
+
+template <class ForwardIt>
+bool IsSort(ForwardIt first, ForwardIt last) {
+  return IsSortedUntil(first, last) == last;
+}
+
+template <class ForwardIt, class Compare>
+bool IsSort(ForwardIt first, ForwardIt last, Compare comp) {
+  return IsSortedUntil(first, last, comp) == last;
 }
 
 template <typename ForwardIt, typename T>
@@ -271,6 +344,16 @@ std::pair<ForwardIt, ForwardIt> EqualRange(ForwardIt first, ForwardIt last,
                         UpperBound(first, last, value));
 }
 
+template <typename InputIt1, typename InputIt2>
+bool Includes(InputIt1 first1, InputIt1 last1, InputIt2 first2,
+              InputIt2 last2) {
+  for (; first2 != last2; ++first1) {
+    if (first1 == last1 || *first2 < *first1) return false;
+    if (!(*first1 < *first2)) ++first2;
+  }
+  return true;
+}
+
 template <typename InputIt1, typename InputIt2, typename OutputIt>
 OutputIt Merge(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2,
                OutputIt d_first) {
@@ -287,6 +370,16 @@ OutputIt Merge(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2,
     }
   }
   return Copy(first2, last2, d_first);
+}
+
+template <typename Iter>
+void MergeSort(Iter first, Iter last) {
+  if (last - first > 1) {
+    Iter middle = first + (last - first) / 2;
+    MergeSort(first, middle);
+    MergeSort(middle, last);
+    std::inplace_merge(first, middle, last);
+  }
 }
 
 template <typename ForwardIt>
