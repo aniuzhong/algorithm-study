@@ -49,19 +49,10 @@ OutputIt CopyIf(InputIt first, InputIt last, OutputIt d_first,
                 UnaryPredicate pred);
 //   Fill
 template <typename ForwardIt, typename T>
-void Fill(ForwardIt first, ForwardIt last, const T& value) {
-  for (; first != last; ++first) {
-    *first = value;
-  }
-}
+void Fill(ForwardIt first, ForwardIt last, const T& value);
 //   FillN
 template <typename OutputIt, typename Size, typename T>
-OutputIt FillN(OutputIt first, Size count, const T& value) {
-  for (Size i = 0; i < count; i++) {
-    *first++ = value;
-  }
-  return first;
-}
+OutputIt FillN(OutputIt first, Size count, const T& value);
 //   Remove
 template <typename ForwardIt, typename T>
 ForwardIt Remove(ForwardIt first, ForwardIt last, const T& value) {

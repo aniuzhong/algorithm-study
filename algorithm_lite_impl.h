@@ -113,6 +113,21 @@ OutputIt CopyIf(InputIt first, InputIt last, OutputIt d_first,
   return d_first;
 }
 
+template <typename ForwardIt, typename T>
+void Fill(ForwardIt first, ForwardIt last, const T& value) {
+  for (; first != last; ++first) {
+    *first = value;
+  }
+}
+
+template <typename OutputIt, typename Size, typename T>
+OutputIt FillN(OutputIt first, Size count, const T& value) {
+  for (Size i = 0; i < count; i++) {
+    *first++ = value;
+  }
+  return first;
+}
+
 template <typename ForwardIt1, typename ForwardIt2>
 void IterSwap(ForwardIt1 a, ForwardIt2 b) {
   using std::swap;
