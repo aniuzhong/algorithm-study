@@ -102,14 +102,14 @@ NoThrowForwardIt UninitializedMove(InputIt first, InputIt last,
     }
     return current;
   } catch (...) {
-    std::destroy(d_first, current);
+    Destroy(d_first, current);
     throw;
   }
 }
 
 template <typename InputIt, typename Size, typename NoThrowForwardIt>
-std::pair<InputIt, NoThrowForwardIt> UninitializedMoveN(
-    InputIt first, Size count, NoThrowForwardIt d_first) {
+std::pair<InputIt, NoThrowForwardIt>  //
+UninitializedMoveN(InputIt first, Size count, NoThrowForwardIt d_first) {
   using Value = typename std::iterator_traits<NoThrowForwardIt>::value_type;
   NoThrowForwardIt current = d_first;
   try {
@@ -118,7 +118,7 @@ std::pair<InputIt, NoThrowForwardIt> UninitializedMoveN(
           AddressOf(*current)))) Value(std::move(*first));
     }
   } catch (...) {
-    std::destroy(d_first, current);
+    Destroy(d_first, current);
     throw;
   }
   return {first, current};
@@ -134,7 +134,7 @@ void UninitializedDefaultConstruct(ForwardIt first, ForwardIt last) {
           static_cast<const volatile void*>(AddressOf(*current)))) Value;
     }
   } catch (...) {
-    std::destroy(first, current);
+    Destroy(first, current);
     throw;
   }
 }
@@ -146,11 +146,11 @@ ForwardIt UninitializedDefaultConstructN(ForwardIt first, Size n) {
   try {
     for (; n > 0; (void)++current, --n) {
       ::new (const_cast<void*>(
-          static_cast<const volatile void*>(std::addressof(*current)))) T;
+          static_cast<const volatile void*>(AddressOf(*current)))) T;
     }
     return current;
   } catch (...) {
-    std::destroy(first, current);
+    Destroy(first, current);
     throw;
   }
 }
@@ -162,10 +162,10 @@ void UninitializedValueConstruct(ForwardIt first, ForwardIt last) {
   try {
     for (; current != last; ++current) {
       ::new (const_cast<void*>(
-          static_cast<const volatile void*>(std::addressof(*current)))) Value();
+          static_cast<const volatile void*>(AddressOf(*current)))) Value();
     }
   } catch (...) {
-    std::destroy(first, current);
+    Destroy(first, current);
     throw;
   }
 }
@@ -177,23 +177,23 @@ ForwardIt UninitializedValueConstructN(ForwardIt first, Size n) {
   try {
     for (; n > 0; (void)++current, --n) {
       ::new (const_cast<void*>(
-          static_cast<const volatile void*>(std::addressof(*current)))) T();
+          static_cast<const volatile void*>(AddressOf(*current)))) T();
     }
     return current;
   } catch (...) {
-    std::destroy(first, current);
+    Destroy(first, current);
     throw;
   }
 }
 
 template <typename ForwardIt>
 void Destroy(ForwardIt first, ForwardIt last) {
-  for (; first != last; ++first) DestroyAt(std::addressof(*first));
+  for (; first != last; ++first) DestroyAt(AddressOf(*first));
 }
 
 template <typename ForwardIt, typename Size>
 ForwardIt DestroyN(ForwardIt first, Size n) {
-  for (; n > 0; (void)++first, --n) std::destroy_at(std::addressof(*first));
+  for (; n > 0; (void)++first, --n) Destroy_at(AddressOf(*first));
   return first;
 }
 
