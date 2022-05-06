@@ -202,7 +202,9 @@ ForwardIt Rotate(ForwardIt first, ForwardIt n_first, ForwardIt last) {
   ForwardIt next_read = first;  // read position for when "read" hits "last"
 
   while (read != last) {
-    if (write == next_read) next_read = read;  // track where "first" went
+    if (write == next_read) {
+      next_read = read;  // track where "first" went
+    }
     IterSwap(write++, read++);
   }
 
@@ -213,7 +215,7 @@ ForwardIt Rotate(ForwardIt first, ForwardIt n_first, ForwardIt last) {
 
 template <typename ForwardIt>
 void InsertionSort(ForwardIt first, ForwardIt last) {
-  for (auto it = first; it != last; ++it) {
+  for (ForwardIt it = first; it != last; ++it) {
     Rotate(UpperBound(first, it, *it), it, std::next(it, 1));
   }
 }
@@ -224,12 +226,15 @@ ForwardIt Unique(ForwardIt first, ForwardIt last) {
 
   ForwardIt result = first;
   while (++first != last) {
-    if (!(*result == *first) && ++result != first) {
+    if (*result != *first) {
+      ++result;
+      // if (result != first) {
       *result = std::move(*first);
+      // }
     }
   }
   return ++result;
-}
+};
 
 template <typename InputIt, typename UnaryPredicate>
 bool IsPartitioned(InputIt first, InputIt last, UnaryPredicate p) {
@@ -242,13 +247,13 @@ bool IsPartitioned(InputIt first, InputIt last, UnaryPredicate p) {
 
 template <typename ForwardIt, typename UnaryPredicate>
 ForwardIt Partition(ForwardIt first, ForwardIt last, UnaryPredicate p) {
+  // "first" always reference to the first element that not satisfied "p".
   first = FindIfNot(first, last, p);
   if (first == last) return first;
 
   for (ForwardIt i = std::next(first); i != last; ++i) {
     if (p(*i)) {
-      IterSwap(i, first);
-      ++first;
+      IterSwap(i, first++);
     }
   }
   return first;

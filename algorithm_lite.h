@@ -6,15 +6,6 @@
 #include <utility>    // std::pair, std::swap
 
 // Non-modifying sequence operations
-//   Find
-template <typename InputIt, typename T>
-constexpr InputIt Find(InputIt first, InputIt last, const T& value);
-//   FindIf
-template <typename InputIt, typename UnaryPredicate>
-constexpr InputIt FindIf(InputIt first, InputIt last, UnaryPredicate p);
-//   FindIfNot
-template <typename InputIt, typename UnaryPredicate>
-constexpr InputIt FindIfNot(InputIt first, InputIt last, UnaryPredicate q);
 //   AllOf
 template <typename InputIt, typename UnaryPredicate>
 constexpr bool AllOf(InputIt first, InputIt last, UnaryPredicate p);
@@ -38,6 +29,220 @@ Count(InputIt first, InputIt last, const T& value);
 template <typename InputIt, typename UnaryPredicate>
 typename std::iterator_traits<InputIt>::difference_type  //
 CountIf(InputIt first, InputIt last, UnaryPredicate p);
+//   Mismatch
+template <class InputIt1, class InputIt2>
+std::pair<InputIt1, InputIt2> mismatch(InputIt1 first1, InputIt1 last1,
+                                       InputIt2 first2) {
+  while (first1 != last1 && *first1 == *first2) {
+    ++first1, ++first2;
+  }
+  return std::make_pair(first1, first2);
+}
+template <class InputIt1, class InputIt2, class BinaryPredicate>
+std::pair<InputIt1, InputIt2> mismatch(InputIt1 first1, InputIt1 last1,
+                                       InputIt2 first2, BinaryPredicate p) {
+  while (first1 != last1 && p(*first1, *first2)) {
+    ++first1, ++first2;
+  }
+  return std::make_pair(first1, first2);
+}
+template <class InputIt1, class InputIt2>
+std::pair<InputIt1, InputIt2> mismatch(InputIt1 first1, InputIt1 last1,
+                                       InputIt2 first2, InputIt2 last2) {
+  while (first1 != last1 && first2 != last2 && *first1 == *first2) {
+    ++first1, ++first2;
+  }
+  return std::make_pair(first1, first2);
+}
+template <class InputIt1, class InputIt2, class BinaryPredicate>
+std::pair<InputIt1, InputIt2> mismatch(InputIt1 first1, InputIt1 last1,
+                                       InputIt2 first2, InputIt2 last2,
+                                       BinaryPredicate p) {
+  while (first1 != last1 && first2 != last2 && p(*first1, *first2)) {
+    ++first1, ++first2;
+  }
+  return std::make_pair(first1, first2);
+}
+//   Find
+template <typename InputIt, typename T>
+constexpr InputIt Find(InputIt first, InputIt last, const T& value);
+//   FindIf
+template <typename InputIt, typename UnaryPredicate>
+constexpr InputIt FindIf(InputIt first, InputIt last, UnaryPredicate p);
+//   FindIfNot
+template <typename InputIt, typename UnaryPredicate>
+constexpr InputIt FindIfNot(InputIt first, InputIt last, UnaryPredicate q);
+//   FindEnd
+template <class ForwardIt1, class ForwardIt2>
+ForwardIt1 FindEnd(ForwardIt1 first, ForwardIt1 last, ForwardIt2 s_first,
+                   ForwardIt2 s_last) {
+  if (s_first == s_last) return last;
+  ForwardIt1 result = last;
+  while (true) {
+    ForwardIt1 new_result = std::search(first, last, s_first, s_last);
+    if (new_result == last) {
+      break;
+    } else {
+      result = new_result;
+      first = result;
+      ++first;
+    }
+  }
+  return result;
+}
+template <class ForwardIt1, class ForwardIt2, class BinaryPredicate>
+ForwardIt1 FindEnd(ForwardIt1 first, ForwardIt1 last, ForwardIt2 s_first,
+                   ForwardIt2 s_last, BinaryPredicate p) {
+  if (s_first == s_last) return last;
+  ForwardIt1 result = last;
+  while (true) {
+    ForwardIt1 new_result = std::search(first, last, s_first, s_last, p);
+    if (new_result == last) {
+      break;
+    } else {
+      result = new_result;
+      first = result;
+      ++first;
+    }
+  }
+  return result;
+}
+//   FindFirstOf
+template <class InputIt, class ForwardIt>
+InputIt FindFirstOf(InputIt first, InputIt last, ForwardIt s_first,
+                    ForwardIt s_last) {
+  for (; first != last; ++first) {
+    for (ForwardIt it = s_first; it != s_last; ++it) {
+      if (*first == *it) {
+        return first;
+      }
+    }
+  }
+  return last;
+}
+//   AjacentFind
+template <class ForwardIt>
+ForwardIt AjacentFind(ForwardIt first, ForwardIt last) {
+  if (first == last) {
+    return last;
+  }
+  ForwardIt next = first;
+  ++next;
+  for (; next != last; ++next, ++first) {
+    if (*first == *next) {
+      return first;
+    }
+  }
+  return last;
+}
+template <class ForwardIt, class BinaryPredicate>
+ForwardIt AjacentFind(ForwardIt first, ForwardIt last, BinaryPredicate p) {
+  if (first == last) {
+    return last;
+  }
+  ForwardIt next = first;
+  ++next;
+  for (; next != last; ++next, ++first) {
+    if (p(*first, *next)) {
+      return first;
+    }
+  }
+  return last;
+}
+//   Search
+template <class ForwardIt1, class ForwardIt2>
+constexpr ForwardIt1 Search(ForwardIt1 first, ForwardIt1 last,
+                            ForwardIt2 s_first, ForwardIt2 s_last) {
+  while (1) {
+    ForwardIt1 it = first;
+    for (ForwardIt2 s_it = s_first;; ++it, ++s_it) {
+      if (s_it == s_last) return first;
+      if (it == last) return last;
+      if (!(*it == *s_it)) break;
+    }
+    ++first;
+  }
+}
+template <class ForwardIt1, class ForwardIt2, class BinaryPredicate>
+constexpr ForwardIt1 Search(ForwardIt1 first, ForwardIt1 last,
+                            ForwardIt2 s_first, ForwardIt2 s_last,
+                            BinaryPredicate p) {
+  while (1) {
+    ForwardIt1 it = first;
+    for (ForwardIt2 s_it = s_first;; ++it, ++s_it) {
+      if (s_it == s_last) return first;
+      if (it == last) return last;
+      if (!p(*it, *s_it)) break;
+    }
+    ++first;
+  }
+}
+//   SearchN
+template <class ForwardIt, class Size, class T>
+ForwardIt SearchN(ForwardIt first, ForwardIt last, Size count, const T& value) {
+  if (count <= 0) {
+    return first;
+  }
+  for (; first != last; ++first) {
+    if (!(*first == value)) {
+      continue;
+    }
+
+    ForwardIt candidate = first;
+    Size cur_count = 0;
+
+    while (true) {
+      ++cur_count;
+      if (cur_count >= count) {
+        // success
+        return candidate;
+      }
+      ++first;
+      if (first == last) {
+        // exhausted the list
+        return last;
+      }
+      if (!(*first == value)) {
+        // too few in a row
+        break;
+      }
+    }
+  }
+  return last;
+}
+template <class ForwardIt, class Size, class T, class BinaryPredicate>
+ForwardIt SearchN(ForwardIt first, ForwardIt last, Size count, const T& value,
+                  BinaryPredicate p) {
+  if (count <= 0) {
+    return first;
+  }
+  for (; first != last; ++first) {
+    if (!p(*first, value)) {
+      continue;
+    }
+
+    ForwardIt candidate = first;
+    Size cur_count = 0;
+
+    while (true) {
+      ++cur_count;
+      if (cur_count >= count) {
+        // success
+        return candidate;
+      }
+      ++first;
+      if (first == last) {
+        // exhausted the list
+        return last;
+      }
+      if (!p(*first, value)) {
+        // too few in a row
+        break;
+      }
+    }
+  }
+  return last;
+}
 
 // Modifying sequence operations
 //   Copy

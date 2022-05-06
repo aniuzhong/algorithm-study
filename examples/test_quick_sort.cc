@@ -5,7 +5,7 @@
 
 #include "algorithm_lite.h"
 int main() {
-  std::forward_list<int> s{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+  std::vector<int> s{8, 3, 5, 4, 0, 2, 4, 9, 6, 1};
 
   auto print = [&s](std::string_view const rem) {
     for (auto a : s) {
