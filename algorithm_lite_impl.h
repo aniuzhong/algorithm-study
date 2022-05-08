@@ -228,9 +228,9 @@ ForwardIt Unique(ForwardIt first, ForwardIt last) {
   while (++first != last) {
     if (*result != *first) {
       ++result;
-      // if (result != first) {
-      *result = std::move(*first);
-      // }
+      if (result != first) {
+        *result = std::move(*first);
+      }
     }
   }
   return ++result;
