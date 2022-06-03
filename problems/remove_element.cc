@@ -10,7 +10,7 @@ ForwardIt remove(ForwardIt first, ForwardIt last, const T& value) {
       if (*i != value) *first++ = std::move(*i);
     }
   }
-  return first;
+  return first; // logic 'end'
 }
 
 }  // namespace detail
