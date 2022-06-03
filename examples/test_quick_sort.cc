@@ -2,8 +2,10 @@
 #include <forward_list>
 #include <iostream>
 #include <string_view>
-
 #include "algorithm_lite.h"
+
+
+
 int main() {
   std::vector<int> s{8, 3, 5, 4, 0, 2, 4, 9, 6, 1};
 

@@ -48,3 +48,45 @@ add_executable(squares_of_a_sorted_array squares_of_a_sorted_array.cc)  # 977
 # 76
 
 # 59
+
+# add_executable(hamming_distance hamming_distance.cc)  # 461.
+# add_executable(reverse_bits reverse_bits.cc)  # 190.
+# add_executable(single_number single_number.cc)  # 136.
+# add_executable(power_of_four power_of_four.cc)  # 342.
+# add_executable(maximum_product_of_word_lengths
+#   maximum_product_of_word_lengths.cc)  # 318.
+
+# 338
+# 268
+# 693
+# 476
+# 260
+
+# add_executable(n_ary_tree_preorder_traversal
+#   n_ary_tree_preorder_traversal.cc)  # 589
+
+add_executable(combinations combinations.cc)  # 77
+add_executable(letter_combinations_of_a_phone_number
+  letter_combinations_of_a_phone_number.cc)  # 17
+add_executable(combination_sum combination_sum.cc)  # 39
+add_executable(combination_sum_ii combination_sum_ii.cc)  # 40
+add_executable(combination_sum_iii combination_sum_iii.cc)  # 216
+
+
+# add_executable(n_queens n_queens.cc)  # 51
+
+# add_executable(bag bag.cc)
+
+# climbing_stairs
+# 0746.Min Cost Climbing Stairs
+# coin_change
+# coin_change_2
+# fibonacci_number
+# maximum_subarray
+# triangle
+# 0062.Unique Paths
+# 0063.Unique Paths II
+# 0343.Integer Break
+# 0096.Unique Binary Search Trees
+# 0095.Unique Binary Search Trees II
+# longest-common-subsequence
